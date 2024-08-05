@@ -1,0 +1,20 @@
+*.icon-white {
+    color: white;
+}
+*.icon-silver {
+    color: silver;
+}
+*.icon-green {
+    color: #00806d;
+}
+*.icon-dark {
+    color: gray;
+}
+
+.bg-headtb {
+    background-color: red;
+}
+
+.cl-icon-ed-dl:hover {
+    color: cornflowerblue;
+}
