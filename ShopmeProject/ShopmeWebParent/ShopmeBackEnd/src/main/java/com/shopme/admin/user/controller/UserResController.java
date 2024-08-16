@@ -1,5 +1,6 @@
-package com.shopme.admin.user;
+package com.shopme.admin.user.controller;
 
+import com.shopme.admin.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
