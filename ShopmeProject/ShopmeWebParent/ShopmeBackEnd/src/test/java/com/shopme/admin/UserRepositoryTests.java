@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
@@ -121,5 +124,21 @@ public class UserRepositoryTests {
     public void enableUser() {
         Integer id = 1;
         userRepository.updateEnabledStatus(id, true);
+    }
+
+    @Test
+    public void testFirstPage() {
+        int pageNum = 0;
+        int pageSize = 4;
+
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        Page<User> page  = userRepository.findAll(pageable);
+
+        List<User> users = page.getContent();
+        for (User user : users) {
+            System.out.println(user);
+        }
+
+        assertThat(users.size()).isEqualTo(pageSize);
     }
 }

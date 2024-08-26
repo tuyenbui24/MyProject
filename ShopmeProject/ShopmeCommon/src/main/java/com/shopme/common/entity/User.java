@@ -30,7 +30,7 @@ public class User {
 
     private boolean enabled;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -125,4 +125,17 @@ public class User {
     public void addRole(Role role) {
         roles.add(role);
     }
+
+    @Transient
+    public String getPhotosImagePath() {
+        if (id == null || photos == null) return "/images/default-user.png";
+
+        return "/user-photos/" + this.id + "/" + this.photos;
+    }
+
+
+//    public boolean hasRole(String roleName) {
+//
+//    }
 }
+//Constants.S3_BASE_URI

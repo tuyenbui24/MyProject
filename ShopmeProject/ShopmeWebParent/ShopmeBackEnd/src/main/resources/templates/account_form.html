@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/fontawessome/all.css}">
+    <link rel="stylesheet" th:href="@{/style.css}">
     <script type="text/javascript" th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
     <script type="text/javascript" th:src="@{/webjars/jquery/3.5.1/dist/jquery.min.js}"></script>
 
@@ -60,20 +61,32 @@
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/Settings}">Settings</a>
                     </li>
+                    <li>
+                        <i class="fa-solid fa-user icon-dark fa-2x"></i>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                           th:href="@{/account}"
+                           th:text="${#authentication.principal.fullName}">
+                        </a>
+                        <div class="dropdown-menu cursor-pointer">
+                            <a th:href="@{/logout}" class="dropdown-item" id="LogoutLink">Logout</a>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </nav>
     </div>
 
     <div>
-        <h1>Manage Users | [[${pageTitle}]]</h1>
+        <h1>Your Account Details</h1>
     </div>
 
     <div th:if="${message != null}" class="alert alert-success text-center">
         [[${message}]]
     </div>
 
-    <form th:action="@{/users/save}" method="post" style="max-width: 700px; margin: 0 auto"
+    <form th:action="@{/account/update}" method="post" style="max-width: 700px; margin: 0 auto"
             th:object="${user}" onsubmit="return checkEmailUnique(this)"
                 enctype="multipart/form-data">
         <input type="hidden" th:field="*{id}">
@@ -81,7 +94,7 @@
             <div class="form-group row" style="margin: 25px 0">
                 <label class="col-sm-4 col-form-label">E-mail</label>
                 <div class="col-sm-8">
-                    <input type="email" class="form-control" th:field="*{email}" id="email" required minlength="8" maxlength="130">
+                    <input type="email" class="form-control" th:field="*{email}" id="email" readonly="readonly">
                 </div>
             </div>
 
@@ -102,34 +115,33 @@
             <div class="form-group row" style="margin: 25px 0">
                 <label class="col-sm-4 col-form-label">Password</label>
                 <div class="col-sm-8">
-                    <input th:if="${user.id == null}" type="password" class="form-control"
-                           th:field="*{password}" required minlength="6" maxlength="45">
-                    <input th:if="${user.id != null}" type="password" class="form-control"
-                           th:field="*{password}" minlength="6" maxlength="45" placeholder="ko">
+                    <input type="password" th:field="*{password}" class="form-control"
+                           placeholder="" minlength="6" maxlength="80"
+                           oninput="checkPasswordMatch(document.getElementById('confirmPassword'))">
+                </div>
+            </div>
+            <div class="form-group row" style="margin: 25px 0">
+                <label class="col-sm-4 col-form-label">Confirm Password</label>
+                <div class="col-sm-8">
+                    <input type="password" th:field="*{password}" class="form-control"
+                           id="confirmPassword" minlength="8" maxlength="80"
+                           oninput="checkPasswordMatch(this)">
                 </div>
             </div>
 
             <div class="form-group row" style="margin: 25px 0">
                 <label class="col-sm-4 col-form-label">Roles</label>
                 <div class="col-sm-8">
-                    <th:block th:each="role : ${listRoles}">
-                        <input type="checkbox" th:field="*{roles}"
-                            th:text="${role.name}"
-                               th:value="${role.id}"
-                               class="m-2"
-                        >
-                        - <small>[[${role.description}]]</small>
-                        <br>
-                    </th:block>
+                    <span>[[${user.roles}]]</span>
                 </div>
             </div>
 
-            <div class="form-group row" style="margin: 25px 0">
-                <label class="col-sm-4 col-form-label">Enabled</label>
-                <div class="col-sm-8">
-                    <input type="checkbox" th:field="*{enabled}">
-                </div>
-            </div>
+<!--            <div class="form-group row" style="margin: 25px 0">-->
+<!--                <label class="col-sm-4 col-form-label">Enabled</label>-->
+<!--                <div class="col-sm-8">-->
+<!--                    <input type="checkbox" th:field="*{enabled}">-->
+<!--                </div>-->
+<!--            </div>-->
 
             <div class="form-group row">
                 <label class="col-sm-4 col-form-label">Photos:</label>
@@ -171,7 +183,7 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script type="text/javascript" th:src="@{/js/common.js}">
     $(document).ready(function () {
         $("#buttonCancel").on("click", function () {
             window.location = "[[@{/Users}]]";
@@ -209,36 +221,12 @@
         }
     }
 
-    function checkEmailUnique(form) {
-        var url = "[[@{/users/check_email}]]";
-        var userEmail = $("#email").val();
-        var csrfValue = $("input[name='_csrf']").val();
-        var userId = $("#id").val();
-        var params = { id: userId, email: userEmail, _csrf: csrfValue };
-
-        $("#modalDiaLog").modal('show');
-
-        $.post(url, params)
-            .done(function(response) {
-                if (response === "OK") {
-                    form.submit();
-                } else {
-                    showModalDialog("warning", "Email is already in use. Please use a different email.");
-                }
-            })
-            .fail(function(jqXHR, textStatus, errorThrown) {
-                console.log("Error details:", textStatus, errorThrown);
-                showModalDialog("Error", "An error occurred while checking the email.");
-            });
-
-        return false;
-    }
-
-
-    function showModalDialog(title, message) {
-        $("#modalTitle").text(title);
-        $("#modalBody").text(message);
-        $("#modalDiaLog").modal('show');
+    function checkPasswordMatch(confirmPassword) {
+        if (confirmPassword.value != $("#password").val()) {
+            confirmPassword.setCustomValidity("Passwords do not match!");
+        } else {
+            confirmPassword.setCustomValidity("");
+        }
     }
 </script>
 </body>

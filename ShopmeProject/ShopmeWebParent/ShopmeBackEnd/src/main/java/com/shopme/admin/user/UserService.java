@@ -3,6 +3,10 @@ package com.shopme.admin.user;
 import com.shopme.common.entity.Role;
 import com.shopme.common.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +27,28 @@ public class UserService {
     @Autowired
     public PasswordEncoder passwordEncoder;
 
-    public List<User> listAllUsers () {
-        return userRepository.findAll();
+    public User getByEmail(String email) {
+        return userRepository.getUserByEmail(email);
     }
+
+    public static final int USERS_PER_PAGE = 4;
+
+    public List<User> listAllUsers () {
+        Sort sort= Sort.by("lastName").ascending();
+        return userRepository.findAll(sort);
+    }
+
+    public Page<User> listByPage(int pageNum, String sortField, String sortDir, String keyword) {
+        Pageable pageable = PageRequest.of(pageNum - 1, USERS_PER_PAGE,
+                sortDir.equals("asc") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending());
+
+        if (keyword != null) {
+            return userRepository.findAll(keyword, pageable);
+        }
+
+        return userRepository.findAll(pageable);
+    }
+
 
     public List<Role> listAllRoles() {
         return roleRepository.findAll();
@@ -35,7 +58,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
-    public void save(User user) {
+    public User save(User user) {
         boolean isUpdatingUser = (user.getId() != null);
 
         if (isUpdatingUser) {
@@ -54,7 +77,25 @@ public class UserService {
         } else {
             encryptPassword(user);
         }
-        userRepository.save(user);
+        return userRepository.save(user);
+    }
+
+    public User updateAccount(User userInForm) {
+        User userInDB = userRepository.findById(userInForm.getId()).get();
+
+        if (!userInForm.getPassword().isEmpty()) {
+            userInDB.setPassword(userInForm.getPassword());
+            encryptPassword(userInDB);
+        }
+
+        if (userInForm.getPhotos() != null) {
+            userInDB.setPhotos(userInForm.getPhotos());
+        }
+
+        userInDB.setFirstName(userInForm.getFirstName());
+        userInDB.setLastName(userInForm.getLastName());
+
+        return userRepository.save(userInDB);
     }
 
     public boolean isEmailUnique(Integer id, String email) {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<html lang="en" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
@@ -58,6 +59,18 @@
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/Settings}">Settings</a>
                     </li>
+                    <li>
+                        <i class="fa-solid fa-user icon-dark fa-2x"></i>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                           th:href="@{/account}"
+                           th:text="${#authentication.principal.fullName}">
+                        </a>
+                        <div class="dropdown-menu cursor-pointer">
+                            <a th:href="@{/logout}" class="dropdown-item" id="LogoutLink">Logout</a>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -66,6 +79,28 @@
     <div>
         <h1>Manage Users</h1>
         <a th:href="@{/users/new}">Create New User</a>
+        &nbsp; &nbsp;
+        <a th:href="@{/users/export/csv}">Export to CSV</a>
+        &nbsp; &nbsp;
+        <a th:href="@{/users/export/excel}">Export to EXCEL</a>
+        &nbsp; &nbsp;
+        <a th:href="@{/users/export/pdf}">Export to PDF</a>
+    </div>
+    <div th:if="${message != null}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+
+    <div>
+        <form th:action="@{/Users/page/1}" class="form-check-inline m-3 d-flex align-items-center">
+            <input type="hidden" name="sortField" th:value="${sortField}">
+            <input type="hidden" name="sortDir" th:value="${sortDirection}">
+
+            Filter:&nbsp; <input  type="search" name="keyword" th:value="${keyword}" class="form-control" style="width: 25%;" required >
+            &nbsp;&nbsp
+            <input type="submit" value="Search" class="btn btn-primary">
+            &nbsp;&nbsp
+            <input type="button" value="Clear" class="btn btn-secondary" onclick="clearFilter()">
+        </form>
     </div>
 
     <div>
@@ -74,9 +109,58 @@
                 <tr>
                     <th>User ID</th>
                     <th>Photos</th>
-                    <th>E-mail</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
+<!--                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='email', sortDir=${reverseSortDir})}">Email</a></th>-->
+<!--                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='firstName', sortDir=${reverseSortDir})}">First Name</a></th>-->
+<!--                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='lastName', sortDir=${reverseSortDir})}">Last Name</a></th>-->
+                    <th>
+                        <a th:if="${sortField != 'email'}" class="text-dark"
+                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${sortDirection}">
+                            E-mail
+                        </a>
+
+                        <a th:if="${sortField == 'email'}"
+                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${reverseSortDir}">
+                            First Name
+                        </a>
+
+                        <span th:if="${sortField == 'email'}"
+                              th:class="${sortDirection == 'asc' ? 'fa-solid fa-caret-up' : 'fa-solid fa-caret-down'}">
+                        </span>
+
+                    </th>
+
+                    <th>
+                        <a th:if="${sortField != 'firstName'}" class="text-dark"
+                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${sortDirection}">
+                            First Name
+                        </a>
+
+                        <a th:if="${sortField == 'firstName'}"
+                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${reverseSortDir}">
+                            First Name
+                        </a>
+
+                        <span th:if="${sortField == 'firstName'}"
+                              th:class="${sortDirection == 'asc' ? 'fa-solid fa-caret-up' : 'fa-solid fa-caret-down'}">
+                        </span>
+                    </th>
+
+                    <th>
+                        <a th:if="${sortField != 'lastName'}" class="text-dark"
+                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${sortDirection}">
+                            First Name
+                        </a>
+
+                        <a th:if="${sortField == 'lastName'}"
+                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${reverseSortDir}">
+                            First Name
+                        </a>
+
+                        <span th:if="${sortField == 'lastName'}"
+                              th:class="${sortDirection == 'asc' ? 'fa-solid fa-caret-up' : 'fa-solid fa-caret-down'}">
+                        </span>
+                    </th>
+
                     <th>Roles</th>
                     <th>Enabled</th>
                     <th></th>
@@ -84,9 +168,12 @@
             </thead>
 
             <tbody>
-                <tr th:each="user : ${listUser}">
+                <tr th:each="user : ${listUsers}">
                     <td>[[${user.id}]]</td>
-                    <td><i class="fa-solid fa-image-portrait fa-3x icon-dark"></i></td>
+                    <td>
+                        <i th:if="${user.photos == null}" class="fa-solid fa-image-portrait fa-3x icon-dark"></i>
+                        <img th:if="${user.photos != null}" th:src="@{${user.photosImagePath}}" style="width:100px ">
+                    </td>
                     <td>[[${user.email}]]</td>
                     <td>[[${user.firstName}]]</td>
                     <td>[[${user.lastName}]]</td>
@@ -133,11 +220,40 @@
         </div>
     </div>
 
+    <div class="text-center m-1" th:if="${totalItem > 0}">
+        <span>Showing user # [[${startCount}]] to [[${endCount}]] of [[${totalItem}]]</span>
+    </div>
+    <div class="text-center m-1" th:unless="${totalItem > 0}">
+        <span>No user found</span>
+    </div>
+
+    <div class="container" th:if="${totalItem > 0}">
+        <div class="text-center">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/Users/page/1(sortField=${sortField}, sortDirection=${sortDirection})}" aria-label="First">First</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/Users/page/{pageNum}(pageNum=${currentPage - 1}, sortField=${sortField}, sortDirection=${sortDirection})}" aria-label="Previous">Previous</a>
+                </li>
+                <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, totalPages)}" th:classappend="${pageNum == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/Users/page/{pageNum}(pageNum=${pageNum}, sortField=${sortField}, sortDirection=${sortDirection})}" th:text="${pageNum}"></a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/Users/page/{pageNum}(pageNum=${currentPage + 1}, sortField=${sortField}, sortDirection=${sortDirection})}" aria-label="Next">Next</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/Users/page/{pageNum}(pageNum=${totalPages}, sortField=${sortField}, sortDirection=${sortDirection})}" aria-label="Last">Last</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
     <div class="text-center">
         <p>Shopme control panel - Copyright &copy; Shopme</p>
     </div>
 </div>
-<script type="text/javascript">
+<script type="text/javascript" th:src="@{/js/common.js}">
     $(document).ready(function () {
         $(".link-delete").on("click", function (e) {
             e.preventDefault();
@@ -146,6 +262,17 @@
             $("#yesBtn").attr("href", link.attr("href"))
             $("#confirmText").text("Are you sure delete this user: " + userId);
             $("#confirmModal").modal();
+        });
+    });
+
+    function clearFilter() {
+        window.location = '[[@{/Users}]]';
+    }
+
+    $(document).ready(function () {
+        $('#LogoutLink').on("click", function (e) {
+            e.preventDefault();
+            document.LogoutForm.onsubmit;
         });
     });
 </script>

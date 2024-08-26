@@ -1,10 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8d7da;
+            color: #721c24;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .error-container {
+            text-align: center;
+            max-width: 500px;
+            background-color: #f8d7da;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .error-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            text-decoration: none;
+            color: #721c24;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-$END$
+<div class="error-container">
+    <h1 class="error-title">Oops! Something went wrong.</h1>
+    <p class="error-message">We encountered an unexpected error. Please try again later.</p>
+    <a href="/ShopmeAdmin/" class="back-link">Go Back to Home</a>
+</div>
 </body>
 </html>
