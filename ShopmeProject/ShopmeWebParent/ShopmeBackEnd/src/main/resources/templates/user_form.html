@@ -28,37 +28,37 @@
                         <a class="nav-link" th:href="@{/Users}">Users</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Categories}">Categories</a>
+                        <a class="nav-link" th:href="@{/categories}">Categories</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Brands}">Brands</a>
+                        <a class="nav-link" th:href="@{/brands}">Brands</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Products}">Products</a>
+                        <a class="nav-link" th:href="@{/products}">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Customers}">Customers</a>
+                        <a class="nav-link" th:href="@{/customers}">Customers</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Shipping}">Shipping</a>
+                        <a class="nav-link" th:href="@{/shipping}">Shipping</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Orders}">Orders</a>
+                        <a class="nav-link" th:href="@{/orders}">Orders</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Sales}">Sales</a>
+                        <a class="nav-link" th:href="@{/sales}">Sales</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Repost}">Repost</a>
+                        <a class="nav-link" th:href="@{/repost}">Repost</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Articles}">Articles</a>
+                        <a class="nav-link" th:href="@{/articles}">Articles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Menus}">Menus</a>
+                        <a class="nav-link" th:href="@{/menus}">Menus</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Settings}">Settings</a>
+                        <a class="nav-link" th:href="@{/settings}">Settings</a>
                     </li>
                 </ul>
             </div>
@@ -172,42 +172,9 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#buttonCancel").on("click", function () {
-            window.location = "[[@{/Users}]]";
-        });
 
-        $("#fileImage").change(function() {
-            if (!checkFileSize(this)) {
-                return;
-            }
-            showImageThumbnail(this);
-        });
-    });
+    moduleUrl = "[[@{/Users}]]";
 
-    function showImageThumbnail(fileInput) {
-        var file = fileInput.files[0];
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $("#thumbnail").attr("src", e.target.result);
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function checkFileSize(fileInput) {
-        fileSize = fileInput.files[0].size;
-
-        if (fileSize > 1048576) {
-            fileInput.setCustomValidity("You must choose an image less than " + 1048576 + " bytes!");
-            fileInput.reportValidity();
-
-            return false;
-        } else {
-            fileInput.setCustomValidity("");
-
-            return true;
-        }
-    }
 
     function checkEmailUnique(form) {
         var url = "[[@{/users/check_email}]]";
@@ -241,5 +208,6 @@
         $("#modalDiaLog").modal('show');
     }
 </script>
+<script type="text/javascript" th:src="@{/js/common_form.js}"></script>
 </body>
 </html>

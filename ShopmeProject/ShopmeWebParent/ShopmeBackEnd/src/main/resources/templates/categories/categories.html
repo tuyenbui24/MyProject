@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-                xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="en" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Login - Shopme Admin</title>
+    <title>Home - Shopme Admin</title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/fontawessome/all.css}">
     <link rel="stylesheet" th:href="@{/style.css}">
@@ -14,9 +14,6 @@
 <body>
 <div class="container-fluid">
     <div>
-        <form th:action="@{/Logout}" method="post" th:hidden="true" name="LogoutForm">
-            <input type="submit">
-        </form>
         <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
             <a class="navbar-brand" th:href="@{/}">
                 <img th:src="@{/images/ShopmeAdminSmall.png}" alt="Brand">
@@ -26,10 +23,10 @@
             </button>
             <div class="collapse navbar-collapse" id="topNavbar">
                 <ul class="navbar-nav">
-                    <li class="nav-item" sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+                    <li class="nav-item">
                         <a class="nav-link" th:href="@{/Users}">Users</a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+                    <li class="nav-item">
                         <a class="nav-link" th:href="@{/categories}">Categories</a>
                     </li>
                     <li class="nav-item">
@@ -74,25 +71,67 @@
                             <a th:href="@{/logout}" class="dropdown-item" id="LogoutLink">Logout</a>
                         </div>
                     </li>
-
                 </ul>
             </div>
         </nav>
     </div>
 
     <div>
-        <h1>Shop me Control Panel</h1>
-        Welcome
-        <a th:href="@{/account}" sec:authentication="principal.fullName">
-        </a>
-        <span sec:authentication="principal.authorities"></span>
+        <h1>Manage Categories</h1>
+        <a th:href="@{/categories/new}">Create New Category</a>
+        &nbsp; &nbsp;
+        <a th:href="@{/categories/export/csv}">Export to CSV</a>
+    </div>
+    <div th:if="${message != null}" class="alert alert-success text-center">
+        [[${message}]]
     </div>
 
     <div>
+        <table class="table table-bordered table-striped table-hover table-responsive">
+            <thead >
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Alias</th>
+                <th>Enabled</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cat : ${listCategories}">
+                <td>[[${cat.id}]]</td>
+                <td>
+                    <i th:if="${cat.image == null}" class="fa-solid fa-image-portrait fa-3x icon-dark img-fluid"></i>
+                    <img th:if="${cat.image != null}" th:src="@{${cat.imagePath}}" style="width:100px ">
+                </td>
+                <td>[[${cat.name}]]</td>
+                <td class="hideable-column">[[${cat.alias}]]</td>
+
+                <td>
+                    <a th:if="${cat.enabled == true}" th:href="@{'/categories/' + ${cat.id} + '/enabled/false'}" title="Disable Category">
+                        <i class="fa-solid fa-square-check fa-2x"></i>
+                    </a>
+                    <a th:if="${cat.enabled == false}" th:href="@{'/categories/' + ${cat.id} + '/enabled/true'}" title="Enable Category">
+                        <i class="fa-regular fa-square-check fa-2x"></i>
+                    </a>
+                </td>
+                <td>
+                    <a th:href="@{'/categories/edit/' + ${cat.id}}" title="Edit this Category">
+                        <i class="fa-regular fa-pen-to-square fa-2x icon-green cl-icon-ed-dl"></i>
+                    </a>
+                    &nbsp;
+                    <a th:href="@{'/categories/delete/' + ${cat.id}}" th:userId="${user.id}" title="Delete this Category">
+                        <i class="fa-solid fa-trash fa-2x icon-dark cl-icon-ed-dl"></i>
+                    </a>
+                </td>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center">
         <p>Shopme control panel - Copyright &copy; Shopme</p>
     </div>
 </div>
-<script th:src="@{/js/common.js}">
-</script>
 </body>
 </html>

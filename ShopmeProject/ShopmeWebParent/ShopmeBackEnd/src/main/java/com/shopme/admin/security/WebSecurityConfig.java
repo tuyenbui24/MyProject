@@ -40,8 +40,10 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authenticationProvider(authenticationProvider());
 
-        http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/Users/**").hasAuthority("Admin")
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/Users/**").hasAnyAuthority("Admin", "Editor")
+                        .requestMatchers("/categories/**").hasAnyAuthority("Admin", "Editor")
                         .requestMatchers("/login", "/error", "/images/**", "/js/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -53,7 +55,9 @@ public class WebSecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                        .permitAll()
+                        .permitAll())
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/error")
                 );
 
         return http.build();
@@ -62,7 +66,7 @@ public class WebSecurityConfig {
     @Bean
     public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowUrlEncodedDoubleSlash(true);
+        firewall.setAllowUrlEncodedSlash(true);
         return firewall;
     }
 }

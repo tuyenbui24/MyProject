@@ -27,37 +27,37 @@
                         <a class="nav-link" th:href="@{/Users}">Users</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Categories}">Categories</a>
+                        <a class="nav-link" th:href="@{/categories}">Categories</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Brands}">Brands</a>
+                        <a class="nav-link" th:href="@{/brands}">Brands</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Products}">Products</a>
+                        <a class="nav-link" th:href="@{/products}">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Customers}">Customers</a>
+                        <a class="nav-link" th:href="@{/customers}">Customers</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Shipping}">Shipping</a>
+                        <a class="nav-link" th:href="@{/shipping}">Shipping</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Orders}">Orders</a>
+                        <a class="nav-link" th:href="@{/orders}">Orders</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Sales}">Sales</a>
+                        <a class="nav-link" th:href="@{/sales}">Sales</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Repost}">Repost</a>
+                        <a class="nav-link" th:href="@{/repost}">Repost</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Articles}">Articles</a>
+                        <a class="nav-link" th:href="@{/articles}">Articles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Menus}">Menus</a>
+                        <a class="nav-link" th:href="@{/menus}">Menus</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/Settings}">Settings</a>
+                        <a class="nav-link" th:href="@{/settings}">Settings</a>
                     </li>
                     <li>
                         <i class="fa-solid fa-user icon-dark fa-2x"></i>
@@ -109,58 +109,9 @@
                 <tr>
                     <th>User ID</th>
                     <th>Photos</th>
-<!--                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='email', sortDir=${reverseSortDir})}">Email</a></th>-->
-<!--                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='firstName', sortDir=${reverseSortDir})}">First Name</a></th>-->
-<!--                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='lastName', sortDir=${reverseSortDir})}">Last Name</a></th>-->
-                    <th>
-                        <a th:if="${sortField != 'email'}" class="text-dark"
-                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${sortDirection}">
-                            E-mail
-                        </a>
-
-                        <a th:if="${sortField == 'email'}"
-                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${reverseSortDir}">
-                            First Name
-                        </a>
-
-                        <span th:if="${sortField == 'email'}"
-                              th:class="${sortDirection == 'asc' ? 'fa-solid fa-caret-up' : 'fa-solid fa-caret-down'}">
-                        </span>
-
-                    </th>
-
-                    <th>
-                        <a th:if="${sortField != 'firstName'}" class="text-dark"
-                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${sortDirection}">
-                            First Name
-                        </a>
-
-                        <a th:if="${sortField == 'firstName'}"
-                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${reverseSortDir}">
-                            First Name
-                        </a>
-
-                        <span th:if="${sortField == 'firstName'}"
-                              th:class="${sortDirection == 'asc' ? 'fa-solid fa-caret-up' : 'fa-solid fa-caret-down'}">
-                        </span>
-                    </th>
-
-                    <th>
-                        <a th:if="${sortField != 'lastName'}" class="text-dark"
-                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${sortDirection}">
-                            First Name
-                        </a>
-
-                        <a th:if="${sortField == 'lastName'}"
-                           th:href="'/users/page/' + ${currentPage} + '?sortField=firstName&sortDirection=' + ${reverseSortDir}">
-                            First Name
-                        </a>
-
-                        <span th:if="${sortField == 'lastName'}"
-                              th:class="${sortDirection == 'asc' ? 'fa-solid fa-caret-up' : 'fa-solid fa-caret-down'}">
-                        </span>
-                    </th>
-
+                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='email', sortDir=${reverseSortDir})}">Email</a></th>
+                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='firstName', sortDir=${reverseSortDir})}">First Name</a></th>
+                    <th><a class="text-dark" th:href="@{/Users/page/1(sortField='lastName', sortDir=${reverseSortDir})}">Last Name</a></th>
                     <th>Roles</th>
                     <th>Enabled</th>
                     <th></th>

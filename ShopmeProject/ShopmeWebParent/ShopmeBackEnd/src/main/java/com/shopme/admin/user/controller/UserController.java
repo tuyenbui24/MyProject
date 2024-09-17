@@ -45,9 +45,6 @@ public class UserController {
         Page<User> page = userService.listByPage(pageNum, sortField, sortDir, keyword);
         List<User> listUsers = page.getContent();
 
-        System.out.println(sortField);
-        System.out.println(sortDir);
-
         long startCount = (pageNum - 1) * userService.USERS_PER_PAGE + 1;
         long endCount = startCount + userService.USERS_PER_PAGE - 1;
         if (endCount > page.getTotalElements()) {
@@ -55,10 +52,6 @@ public class UserController {
         }
 
         String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
-
-        System.out.println("pageNum = " + pageNum);
-        System.out.println("totalPages = " + page.getTotalPages());
-        System.out.println("totalElements = " + page.getTotalElements());
 
         model.addAttribute("currentPage", pageNum);
         model.addAttribute("startCount", startCount);
